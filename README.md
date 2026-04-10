@@ -84,13 +84,97 @@ El sistema cuenta con 3 tablas principales identificadas
 |USUARIO_TURNO | Gestión de accesos, roles de usuario y horarios asignados | 
 
 
-https://github.com/ojitoslanda/JavaWeb-GotaGota/tree/main?tab=readme-ov-file#modelo-relacional-mr
+## Diagrama Entidad - Relación (DER)
+
+   sistema mundo_llantas_aros_pucallpa
+   
+   <img width="700" height="367" alt="image" src="https://github.com/user-attachments/assets/92979d69-1ae4-49dd-87b4-2aff5cfbe8e0" />
 
 
 
+## Modelo Relacional (MR)
+
+MODELO RELACIONAL- sistema mundo_llantas_aros_pucallpa
+<img width="708" height="514" alt="image" src="https://github.com/user-attachments/assets/05e3e28e-c1e5-485d-bd6d-b00a2084fea0" />
 
 
 
+## Cardinalidades
+
+USUARIO_TURNO — VENTA_FACTURACION (1:N)
+Un usuario puede realizar muchas ventas, pero una venta es realizada por un solo usuario.
+INVENTARIO_PRODUCTO — VENTA_FACTURACION (1:N)
+Un producto puede estar en muchas ventas, pero una venta registra un solo producto.
+USUARIO_TURNO — ASISTENCIA (1:N)
+Un usuario puede tener muchas asistencias, pero una asistencia pertenece a un solo usuario.
+
+<img width="653" height="200" alt="image" src="https://github.com/user-attachments/assets/0c6db399-d2f6-4dee-aecd-b600390e17b5" />
+
+
+# Base de datos- De mundo_llantas_y_aros_Pucallpa
+
+El sistema cuenta con 4 tablas principales:
+
+
+```sql
+CREATE DATABASE IF NOT EXISTS mundo_llantas_pucallpa;
+USE mundo_llantas_pucallpa;
+
+-- Tabla usuario_turno
+CREATE TABLE usuario_turno (
+    usuario_id INT AUTO_INCREMENT PRIMARY KEY,
+    nombre VARCHAR(100) NOT NULL,
+    apellido VARCHAR(100) NOT NULL,
+    dni VARCHAR(8) NOT NULL UNIQUE,
+    rol ENUM('Admin', 'Vendedor', 'Almacenero', 'Tecnico') NOT NULL,
+    telefono VARCHAR(15),
+    email VARCHAR(100)
+);
+
+-- Tabla asistencia
+CREATE TABLE asistencia (
+    asistencia_id INT AUTO_INCREMENT PRIMARY KEY,
+    usuario_id INT NOT NULL,
+    fecha DATE NOT NULL,
+    hora_entrada TIME NOT NULL,
+    hora_refrigerio TIME,
+    hora_salida TIME,
+    justificacion TEXT,
+    FOREIGN KEY (usuario_id) REFERENCES usuario_turno(usuario_id)
+);
+
+-- Tabla inventario
+CREATE TABLE inventario_producto (
+    producto_id INT AUTO_INCREMENT PRIMARY KEY,
+    descripcion VARCHAR(255) NOT NULL,
+    categoria ENUM('Llanta', 'Aro') NOT NULL,
+    medida VARCHAR(50) NOT NULL,
+    marca VARCHAR(100),
+    stock_actual INT NOT NULL,
+    precio_unitario DECIMAL(10,2) NOT NULL
+);
+
+-- Tabla ventas
+CREATE TABLE venta_facturacion (
+    venta_id INT AUTO_INCREMENT PRIMARY KEY,
+    usuario_id INT NOT NULL,
+    producto_id INT NOT NULL,
+    fecha_venta DATETIME DEFAULT CURRENT_TIMESTAMP,
+    cantidad INT NOT NULL,
+    tipo_comprobante ENUM('Boleta', 'Factura') NOT NULL,
+    codigo_sunat_xml VARCHAR(255),
+    FOREIGN KEY (usuario_id) REFERENCES usuario_turno(usuario_id),
+    FOREIGN KEY (producto_id) REFERENCES inventario_producto(producto_id)
+);
+
+-- Datos de ejemplo
+INSERT INTO inventario_producto 
+(descripcion, categoria, medida, marca, stock_actual, precio_unitario) VALUES
+('Llanta EfficientGrip', 'Llanta', '205/55R16', 'Goodyear', 40, 350.00),
+('Aro de Lujo Deportivo', 'Aro', 'R17', 'Nabil', 12, 450.00),
+('Llanta Adventure AT', 'Llanta', '265/70R16', 'Goodyear', 20, 580.00),
+('Aro de Repuesto Reforzado', 'Aro', 'R15', 'Generico', 15, 220.00),
+('Llanta Cargo G32', 'Llanta', '195/70R15', 'Goodyear', 30, 410.00);
 
 
 
