@@ -84,7 +84,7 @@ El sistema cuenta con 3 tablas principales identificadas
 |USUARIO_TURNO | Gestión de accesos, roles de usuario y horarios asignados | 
 
 
-
+https://github.com/ojitoslanda/JavaWeb-GotaGota/tree/main?tab=readme-ov-file#modelo-relacional-mr
 
 
 
