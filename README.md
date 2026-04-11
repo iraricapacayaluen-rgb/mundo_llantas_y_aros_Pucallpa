@@ -1,3 +1,11 @@
+## Trello
+mas info en mi [mi tablero de trello](https://trello.com/b/XggL294J)
+![TRELLO](https://trello.com/b/XggL294J/mundo-llantas-y-aros-pucallpa)
+
+-----
+
+
+
 # Sistema de Gestión "Mundo Llantas & Aros"
 Sistema web integral para el control de asistencia biométrica, gestión de inventarios y facturación electrónica.
 Desarrollado como solución tecnológica para modernizar la operatividad del sector automotriz en Pucallpa
