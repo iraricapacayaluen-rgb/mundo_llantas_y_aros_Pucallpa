@@ -1,6 +1,8 @@
 ## Trello
-mas info en mi [mi tablero de trello](https://trello.com/b/XggL294J)
-![TRELLO](https://trello.com/b/XggL294J/mundo-llantas-y-aros-pucallpa)
+mas info en [mi tablero de trello](https://trello.com/b/XggL294J)
+ (<img width="1357" height="624" alt="image" src="https://github.com/user-attachments/assets/4be754fd-0537-455b-99b9-7253daaee71e" />)
+
+
 
 -----
 
