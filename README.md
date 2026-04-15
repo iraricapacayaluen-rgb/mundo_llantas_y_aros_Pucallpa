@@ -138,7 +138,9 @@ CREATE TABLE usuario_turno (
     dni VARCHAR(8) NOT NULL UNIQUE,
     rol ENUM('Admin', 'Vendedor', 'Almacenero', 'Tecnico') NOT NULL,
     telefono VARCHAR(15),
-    email VARCHAR(100)
+    email VARCHAR(100),
+    contrasena VARCHAR(255) NOT NULL,
+    activo TINYINT(1) NOT NULL DEFAULT 1
 );
 
 -- Tabla asistencia
@@ -150,41 +152,78 @@ CREATE TABLE asistencia (
     hora_refrigerio TIME,
     hora_salida TIME,
     justificacion TEXT,
-    FOREIGN KEY (usuario_id) REFERENCES usuario_turno(usuario_id)
+    FOREIGN KEY (usuario_id) REFERENCES usuario_turno(usuario_id),
+    UNIQUE KEY uq_usuario_fecha (usuario_id, fecha)
 );
 
--- Tabla inventario
+-- Tabla inventario_producto
 CREATE TABLE inventario_producto (
     producto_id INT AUTO_INCREMENT PRIMARY KEY,
     descripcion VARCHAR(255) NOT NULL,
     categoria ENUM('Llanta', 'Aro') NOT NULL,
     medida VARCHAR(50) NOT NULL,
     marca VARCHAR(100),
-    stock_actual INT NOT NULL,
+    stock_actual INT NOT NULL DEFAULT 0,
     precio_unitario DECIMAL(10,2) NOT NULL
 );
 
--- Tabla ventas
+-- Tabla venta_facturacion
 CREATE TABLE venta_facturacion (
     venta_id INT AUTO_INCREMENT PRIMARY KEY,
     usuario_id INT NOT NULL,
     producto_id INT NOT NULL,
     fecha_venta DATETIME DEFAULT CURRENT_TIMESTAMP,
     cantidad INT NOT NULL,
+    precio_venta DECIMAL(10,2) NOT NULL,
     tipo_comprobante ENUM('Boleta', 'Factura') NOT NULL,
     codigo_sunat_xml VARCHAR(255),
     FOREIGN KEY (usuario_id) REFERENCES usuario_turno(usuario_id),
     FOREIGN KEY (producto_id) REFERENCES inventario_producto(producto_id)
 );
 
--- Datos de ejemplo
-INSERT INTO inventario_producto 
-(descripcion, categoria, medida, marca, stock_actual, precio_unitario) VALUES
-('Llanta EfficientGrip', 'Llanta', '205/55R16', 'Goodyear', 40, 350.00),
-('Aro de Lujo Deportivo', 'Aro', 'R17', 'Nabil', 12, 450.00),
-('Llanta Adventure AT', 'Llanta', '265/70R16', 'Goodyear', 20, 580.00),
-('Aro de Repuesto Reforzado', 'Aro', 'R15', 'Generico', 15, 220.00),
-('Llanta Cargo G32', 'Llanta', '195/70R15', 'Goodyear', 30, 410.00);
+-- Trigger para descontar stock al registrar una venta
+DELIMITER $$
+
+CREATE TRIGGER trg_descontar_stock
+AFTER INSERT ON venta_facturacion
+FOR EACH ROW
+BEGIN
+    UPDATE inventario_producto
+    SET stock_actual = stock_actual - NEW.cantidad
+    WHERE producto_id = NEW.producto_id;
+END$$
+
+DELIMITER ;
+
+-- Datos de ejemplo: usuario_turno
+INSERT INTO usuario_turno (nombre, apellido, dni, rol, telefono, email, contrasena, activo) VALUES
+('Carlos',  'Ramirez', '12345678', 'Admin',      '987654321', 'carlos@gmail.com', '1234', 1),
+('Lucia',   'Torres',  '87654321', 'Vendedor',   '912345678', 'lucia@gmail.com',  '1234', 1),
+('Miguel',  'Flores',  '11223344', 'Almacenero', '923456789', 'miguel@gmail.com', '1234', 1),
+('Ana',     'Chavez',  '44332211', 'Tecnico',    '934567890', 'ana@gmail.com',    '1234', 1);
+
+-- Datos de ejemplo: inventario_producto
+INSERT INTO inventario_producto (descripcion, categoria, medida, marca, stock_actual, precio_unitario) VALUES
+('Llanta EfficientGrip',      'Llanta', '205/55R16', 'Goodyear', 40, 350.00),
+('Aro de Lujo Deportivo',     'Aro',    'R17',       'Nabil',    12, 450.00),
+('Llanta Adventure AT',       'Llanta', '265/70R16', 'Goodyear', 20, 580.00),
+('Aro de Repuesto Reforzado', 'Aro',    'R15',       'Generico', 15, 220.00),
+('Llanta Cargo G32',          'Llanta', '195/70R15', 'Goodyear', 30, 410.00);
+
+-- Datos de ejemplo: asistencia
+INSERT INTO asistencia (usuario_id, fecha, hora_entrada, hora_refrigerio, hora_salida) VALUES
+(1, '2025-04-01', '08:00:00', '13:00:00', '17:00:00'),
+(2, '2025-04-01', '08:05:00', '13:00:00', '17:00:00'),
+(3, '2025-04-01', '07:55:00', '13:00:00', '17:00:00'),
+(4, '2025-04-01', '08:10:00', '13:00:00', '17:00:00');
+
+-- Datos de ejemplo: venta_facturacion
+INSERT INTO venta_facturacion (usuario_id, producto_id, cantidad, precio_venta, tipo_comprobante) VALUES
+(2, 1, 2, 350.00, 'Boleta'),
+(2, 3, 1, 580.00, 'Factura'),
+(1, 5, 4, 410.00, 'Boleta');
+  
+
 
 
 
